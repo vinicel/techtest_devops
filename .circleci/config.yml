@@ -5,7 +5,7 @@ jobs:
       IMAGE_NAME: guillaudev/techtest
     docker:
       # specify the version
-      - image: circleci/golang:1.13-alpine
+      - image: circleci/golang:1.13
     working_directory: ~/repo
     steps:
       - checkout
