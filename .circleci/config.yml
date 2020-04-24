@@ -9,8 +9,7 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: yes
+      - setup_remote_docker
       - run: |
           TAG=0.1.$CIRCLE_BUILD_NUM
           docker build -t $IMAGE_NAME:$TAG .
@@ -24,4 +23,4 @@ workflows:
       - build:
           filters:
             branches:
-              only: master
+              only: circle
