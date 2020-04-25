@@ -8,7 +8,6 @@
     - { role: common, tags: ['common'] }
     - { role: geerlingguy.docker, tags: ['docker'] }
 
-
 - name: Install application stack
   remote_user: ubuntu
   hosts: tag_component_application:&tag_stage_staging
