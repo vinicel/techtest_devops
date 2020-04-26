@@ -40,7 +40,7 @@ jobs:
           name: Deploy on staging with Ansible
           command: |
             cd ~/repo/automation/ansible
-            ansible-playbook -i inventory staging.yml --user ubuntu --key-file=~/.ssh/id_rsa --extra-vars="application_docker_tag=0.1.CIRCLE_PREVIOUS_BUILD_NUM application_docker_image=$IMAGE_NAME
+            ansible-playbook -i inventory staging.yml --user ubuntu --key-file=~/.ssh/id_rsa --extra-vars="application_docker_tag=0.1.CIRCLE_PREVIOUS_BUILD_NUM application_docker_image=$IMAGE_NAME"
 
 
   deploy-prod:
@@ -67,7 +67,7 @@ jobs:
           name: Deploy on staging with Ansible
           command: |
             cd ~/repo/automation/ansible
-            ansible-playbook -i inventory production.yml --user ubuntu --key-file=~/.ssh/id_rsa --extra-vars="application_docker_tag=0.1.CIRCLE_PREVIOUS_BUILD_NUM application_docker_image=$IMAGE_NAME
+            ansible-playbook -i inventory production.yml --user ubuntu --key-file=~/.ssh/id_rsa --extra-vars="application_docker_tag=0.1.CIRCLE_PREVIOUS_BUILD_NUM application_docker_image=$IMAGE_NAME"
 
 workflows:
   version: 2.1
