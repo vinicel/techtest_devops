@@ -32,7 +32,7 @@ jobs:
           command: |
             sudo apt update
             pip install --user ansible
-            pip install ~/repo/automation/ansible/requi.txt
+            pip install -r ~/repo/automation/ansible/requi.txt
       - run:
           name: Add ansible.cfg
           command: export ANSIBLE_CONFIG=~/repo/automation/ansible/ansible.cfg
@@ -59,7 +59,7 @@ jobs:
           command: |
             sudo apt update
             pip install --user ansible
-            pip install ~/repo/automation/ansible/requi.txt
+            pip install -r ~/repo/automation/ansible/requi.txt
       - run:
           name: Add ansible.cfg
           command: export ANSIBLE_CONFIG=~/repo/automation/ansible/ansible.cfg
