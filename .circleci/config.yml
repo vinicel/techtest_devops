@@ -5,17 +5,69 @@ jobs:
       IMAGE_NAME: guillaudev/techtest
     docker:
       # specify the version
-      - image: circleci/golang:1.13-alpine
+      - image: circleci/golang:1.13
     working_directory: ~/repo
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: yes
+      - setup_remote_docker
       - run: |
           TAG=0.1.$CIRCLE_BUILD_NUM
           docker build -t $IMAGE_NAME:$TAG .
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
           docker push $IMAGE_NAME:$TAG
+
+  deploy-staging:
+    docker:
+      # specify the version
+      - image: circleci/python:3.8.2
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "8e:34:2b:07:42:f5:9d:2e:65:6c:c7:7f:b5:56:40:a1"
+      - setup_remote_docker
+      - run:
+          name: Install ansible and requirement
+          command: |
+            sudo apt update
+            pip install --user ansible
+            pip install -r ~/repo/automation/ansible/requi.txt
+      - run:
+          name: Add ansible.cfg
+          command: export ANSIBLE_CONFIG=~/repo/automation/ansible/ansible.cfg
+      - run:
+          name: Deploy staging Ansible
+          command: |
+            cd ~/repo/automation/ansible
+            ansible-playbook -i inventory staging.yml --user ubuntu --key-file=~/.ssh/id_rsa --extra-vars="application_docker_tag=0.1.CIRCLE_PREVIOUS_BUILD_NUM application_docker_image=$IMAGE_NAME"
+
+
+  deploy-prod:
+    docker:
+      # specify the version
+      - image: circleci/python:3.8.2
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "8e:34:2b:07:42:f5:9d:2e:65:6c:c7:7f:b5:56:40:a1"
+      - setup_remote_docker
+      - run:
+          name: Install ansible and requirement
+          command: |
+            sudo apt update
+            pip install --user ansible
+            pip install -r ~/repo/automation/ansible/requi.txt
+      - run:
+          name: Add ansible.cfg
+          command: export ANSIBLE_CONFIG=~/repo/automation/ansible/ansible.cfg
+      - run:
+          name: Deploy production Ansible
+          command: |
+            cd ~/repo/automation/ansible
+            ansible-playbook -i inventory production.yml --user ubuntu --key-file=~/.ssh/id_rsa --extra-vars="application_docker_tag=0.1.CIRCLE_PREVIOUS_BUILD_NUM application_docker_image=$IMAGE_NAME"
 
 workflows:
   version: 2.1
@@ -24,4 +76,16 @@ workflows:
       - build:
           filters:
             branches:
-              only: master
+              only: circle
+      - deploy-staging:
+          requires:
+            - build
+          filters:
+            branches:
+              only: circle
+      - deploy-prod:
+          requires:
+            - build
+          filters:
+            branches:
+              only: circle
